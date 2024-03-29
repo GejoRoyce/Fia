@@ -4,7 +4,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import Tts from 'react-native-tts';
 
 const CaptureScreen = ({ navigation }) => {
   const [photoUris, setPhotoUris] = useState([]);
@@ -28,7 +27,7 @@ const CaptureScreen = ({ navigation }) => {
     'In Lower level, move to 2 o clock position and click on screen',
     'In Lower level, move to 11 o clock position and click on screen',
     'In Lower level, move to 10 o clock position and click on screen',
-    'Move back to initial Position. Images for 3D facial reconstruction captured successfully, click on the screen again to view images'
+    'Move back to initial Position. Images for 3D facial reconstruction captured successfully'
   ];
 
   useEffect(() => {
@@ -36,9 +35,7 @@ const CaptureScreen = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (prompts[captureIndex]) {
-      Tts.speak(prompts[captureIndex]);
-    }
+    // Speak the current prompt
   }, [captureIndex]);
 
   const takePicture = async () => {

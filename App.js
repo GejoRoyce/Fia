@@ -9,6 +9,9 @@ import SplashScreen from './SplashScreen';
 import InstructionScreen from './InstructionScreen';
 import CaptureScreen from './CaptureScreen';
 import ImageViewerScreen from './ImageViewerScreen';
+import 'react-native-get-random-values';
+
+
 
 const Stack = createStackNavigator();
 
