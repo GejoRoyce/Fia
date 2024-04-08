@@ -1,14 +1,17 @@
+// InstructionScreen.js 
+
 import React, { useState } from 'react';
-import { Button, View, Text, StyleSheet, Image, ScrollView, Alert, Platform } from 'react-native';
-import DeviceInfo from 'react-native-device-info'; // Import react-native-device-info for fetching device information
-import { v4 as uuidv4 } from 'uuid'; // Import uuidv4 for generating UUIDs
+import { Button, Text, StyleSheet, Image, ScrollView, Alert, Platform } from 'react-native';
+import DeviceInfo from 'react-native-device-info'; 
+import { v4 as uuidv4 } from 'uuid'; 
+import { useNavigation } from '@react-navigation/native';
 
 const InstructionScreen = ({ navigation }) => {
   const [deviceId, setDeviceId] = useState('');
   const [userId, setUserId] = useState('');
   const [mobileOS, setMobileOS] = useState('');
 
-  // Function to generate a unique 6-digit alphanumeric user ID
+
   const generateUserId = () => {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -19,18 +22,14 @@ const InstructionScreen = ({ navigation }) => {
     return result;
   };
 
-  // Function to handle ID Generation button press
-  const handleIdGeneration = () => {
 
-    // Fetch and display the device model name
+  const handleIdGeneration = () => {
     const model = DeviceInfo.getModel();
     setDeviceId(model);
 
-    // Generate unique user ID using UUID
     const userId = uuidv4();
     setUserId(userId);
 
-   // Detect mobile OS
     const os = Platform.OS;
     const mobileOSType = Platform.select({
       ios: 'iOS',
@@ -39,7 +38,6 @@ const InstructionScreen = ({ navigation }) => {
     });
     setMobileOS(mobileOSType);
 
-    // Show alert with device model name and user ID
     Alert.alert(
       'ID Generation',
       `Device Model: ${model}\nUser ID: ${userId}\nMobile OS: ${mobileOSType}`,
@@ -48,20 +46,28 @@ const InstructionScreen = ({ navigation }) => {
     );
   };
 
+
+  const handleUploadDetails = () => {
+    navigation.navigate('CaptureScreen', {
+      deviceModel: deviceId,
+      userId: userId,
+      mobileOS: mobileOS,
+    });
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Instructions</Text>
-
+      <Text style={styles.instructions}>{"\n"}Before capturing the image there is few initialization need to be done to effective regeneration of the 3D models {"\n"}</Text>
 
       <Text style={styles.subtitle}> 1. Device and User ID Generation</Text>
       <Text style={styles.instructions}> 
-        Before capturing the image there is few initialization need to be done to effective regeneration of the 3D models {"\n"}
         {"\n"}1. Click on the User ID Generation button to generate a unique user identification.{"\n"}
         {"\n"}2. After the user ID is generated, you can proceed to the next step. {"\n"}{"\n"}
       </Text>
       <Button
         title="ID Generation"
-        onPress={handleIdGeneration} // Call handleIdGeneration function on button press
+        onPress={handleIdGeneration} 
       />
       {userId !== '' && (
         <>
@@ -71,35 +77,29 @@ const InstructionScreen = ({ navigation }) => {
         </>
       )}
 
-      
-      <Text style={styles.subtitle}> 2. Identify Camera Calibration </Text>
-      <Text style={styles.instructions}>
-        Before capturing the images, it is important to identify the camera calibration. {"\n"} 
-        {"\n"}1. Click on the Camera Calibration button to fetch the focal length, sensor size and sensor information from the camera matrix. {"\n"}
-        {"\n"}2. After the camera calibration is done, you can proceed to the next step. {"\n"}
-      </Text>
-      <Button
-        title="Fetch Camera Calibration"
-        onPress={handleIdGeneration} // Call handleIdGeneration function on button press
-      />
 
-
-      <Text style={styles.subtitle}> 3. Capturing Images </Text>
+      <Text style={styles.subtitle}> 2. Capturing Images </Text>
       <Text style={styles.instructions}>
         Please read the following instructions before going to the next step. Understanding the instructions is necessary for the effective recreation of your 3D models.
         {"\n"}
-        {"\n"}1. Please be at a well-lit place for taking the photos.{"\n"}
-        {"\n"}2. Move to the corner of the room, then step forward from the corner in a way you can stretch both hands to the walls of the room.
-        {"\n"}                        or {"\n"}     
+        {"\n"}1. Please be at a well-lit place for taking the photos.(not too dark or not too bright){"\n"}
+        {"\n"}2. Make sure the light source is in front of you, and there is no light source in behind you.{"\n"}
         {"\n"}3. Stand in front of a plain wall and rest close to the wall.{"\n"}
+        {"\n"}4. Images are capturing the following pattern as the image shows. The angle of captures are mentioned as in clock hand position for easy Understanding.{"\n"}      </Text>
+        <Image style={styles.image}source={require('./assets/capture-angle.png')} />
+        <Text style={styles.instructions}>
+        {"\n"}5. The Images are captured in three planes, In upper plane tilt the phone forward and lower plane tilt the phone backward to capture the face. {"\n"}
+        {"\n"}6. You need to stand still and dont move the head till the capture process is completed{"\n"}
+        {"\n"}7. For your convinience, There will be audio and on screen prompts for the angles of capture.{"\n"}
+        {"\n"}8. Only Click on the whitespace in the screen after completion of voice prompt to capture the images.{"\n"}
+        {"\n"}9. There will be total of 18 images to capture, and 2 for capture of your facial deformities at end of the sequence{"\n"}
+        {"\n"}10. If you have no facial deformities to capture, capture image in initial position{"\n"}
+        {"\n"}11. After capturing all images, you can proceed to the next step.{"\n"}
       </Text>
-      <Image
-        style={styles.image}
-        source={require('./assets/capture-angle.png')}
-      />
+      
       <Button
         title="Capture Images"
-        onPress={() => navigation.navigate('CaptureScreen')}
+        onPress={handleUploadDetails}
       />
 
     

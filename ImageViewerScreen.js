@@ -1,34 +1,42 @@
-import React from 'react';
-import { View, Image, StyleSheet, ScrollView, Dimensions, Button } from 'react-native';
-import { Storage } from 'aws-amplify';
+// ImageViewerScreen.js
+
+import React, { useState } from 'react';
+import { View, Image, StyleSheet, ScrollView, Dimensions, Button, Text } from 'react-native';
+import { S3 } from 'aws-sdk';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 const ImageViewerScreen = ({ route }) => {
-    const { capturedImages } = route.params;
+    const navigation = useNavigation();
+    const { deviceModel, userId, mobileOS, capturedImages, focalLength, sensorSize } = route.params;
+    const [uploadedCount, setUploadedCount] = useState(0);
 
     const handleUpload = async () => {
         try {
+            const s3 = new S3({
+                accessKeyId: 'AKIAZQ3DTYNAAT7XC4HM',
+                secretAccessKey: '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',
+                region: 'eu-west-2',
+            });
+
             await Promise.all(
-                capturedImages.map(async (image) => {
+                capturedImages.map(async (image, index) => {
                     const response = await fetch(image.uri);
                     const blob = await response.blob();
                     const filename = image.uri.split('/').pop();
-                    const folderName = generateUniqueFolderName(); // Generate a unique folder name
-                    const key = `${folderName}/${filename}`; // Combine folder name and filename for the S3 key
-                    await Storage.upload({
-                        key: key,
-                        body: blob,
-                    });
-                    console.log(`Image ${filename} uploaded successfully to folder ${folderName}!`);
+                    const key = `${userId}/${filename}`;  
+                    await s3.upload({
+                        Bucket: 'fiadatabucket',
+                        Key: key,
+                        Body: blob,
+                    }).promise();
+                    console.log(`Image ${filename} uploaded successfully to folder ${userId}!`);
+                    setUploadedCount(prevCount => prevCount + 1);
                 })
             );
         } catch (error) {
             console.error('Error uploading images: ', error);
         }
-    };
-
-    // Function to generate a unique folder name (you can customize this according to your requirements)
-    const generateUniqueFolderName = () => {
-        return `images-${Date.now()}`; // Using a timestamp as the folder name
     };
 
     return (
@@ -38,7 +46,10 @@ const ImageViewerScreen = ({ route }) => {
                     <Image key={index} source={{ uri: image.uri }} style={styles.image} />
                 ))}
             </View>
-            <Button title="Upload Images" onPress={handleUpload} />
+            <View style={styles.buttonContainer}>
+                <Button title={`Upload Images (${uploadedCount}/${capturedImages.length})`} onPress={handleUpload}/>
+                <Button title="Next" onPress={() => navigation.navigate('FileUploadScreen', { deviceModel, userId, mobileOS, uploadedCount, focalLength, sensorSize  })} />
+            </View>        
         </ScrollView>
     );
 };

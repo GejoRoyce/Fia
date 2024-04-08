@@ -12,15 +12,14 @@ const SplashScreen = () => {
             navigation.navigate('InstructionScreen');
         }, 10000);
 
-        // Cleanup function to clear the timer in case of component unmount
         return () => clearTimeout(timer);
     }, [navigation]);
 
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'navy' }}>
             <Image
-                source={require('./assets/logo.gif')} // Provide the path to your image
-                style={{ width: 100, height: 100 }} // Adjust the width and height as needed
+                source={require('./assets/logo.gif')}  
+                style={{ width: 100, height: 100 }}  
             />
             <Text style={{ color: 'white', fontSize: 40, fontWeight: 'bold', textAlign: 'center' }}>
                 Facial Image Acquisition App
