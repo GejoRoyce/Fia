@@ -14,8 +14,8 @@ const ImageViewerScreen = ({ route }) => {
     const handleUpload = async () => {
         try {
             const s3 = new S3({
-                accessKeyId: 'AKIAZQ3DTYNAAT7XC4HM',
-                secretAccessKey: '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',
+                accessKeyId: '#',
+                secretAccessKey: '#',
                 region: 'eu-west-2',
             });
 
